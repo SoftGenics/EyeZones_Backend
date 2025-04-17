@@ -1,5 +1,5 @@
 const registration = require('../models/registration');
-const { Op, sequelize } = require('sequelize');
+const { Op, Sequelize } = require('sequelize');
 const products = require('../models/product')
 const Specification = require('../models/specification')
 const offer = require('../models/offer')
@@ -257,9 +257,9 @@ const Addproduct = async (req, res) => {
                 work_for_img: imageUrlWorkFor,
             }] : [];
 
-            
+
             const colors = req.body.color ? JSON.parse(req.body.color) : []; // Parse JSON input
-            
+
             // Parse lenshColor as an array
             // let lenshColor = [];
             // try {
@@ -298,8 +298,8 @@ const Addproduct = async (req, res) => {
                 rating: req.body.rating ? req.body.rating : null,
                 discount: req.body.discount ? req.body.discount : null,
                 color: colors, // Save directly
-                frameColor: req.body.frameColor, 
-                lenshColor: req.body.lenshColor, 
+                frameColor: req.body.frameColor,
+                lenshColor: req.body.lenshColor,
                 highlights: req.body.highlights || '',
                 ideal_for: ideal_for.length ? ideal_for : null, // Set to null if no data
                 product_work_for: product_work_for.length ? product_work_for : null, // Set to null if no data
@@ -410,19 +410,43 @@ const productdetail = async (req, res) => {
         const { frem_type, lens_type } = product; // Extract frem_type and lens_type
 
         // Fetch 4 suggested products based on frem_type or lens_type
-        const suggestedProducts = await products.findAll({
+        // const suggestedProducts = await products.findAll({
+        //     where: {
+        //         product_id: { [Op.ne]: productId }, // Exclude current product
+        //         ...(product.frem_type || product.lens_type ? {
+        //             [Op.or]: [
+        //                 product.frem_type ? { frem_type: product.frem_type } : {},
+        //                 product.lens_type ? { lens_type: product.lens_type } : {},
+        //             ]
+        //         } : {}) // Skip filtering if both values are null
+        //     },
+        //     limit: 4,
+        //     order: [['createdAt', 'DESC']],
+        // });
+
+        // Step 1: Try to find products with matching frem_type or lens_type
+        let suggestedProducts = await products.findAll({
             where: {
-                product_id: { [Op.ne]: productId }, // Exclude current product
-                ...(product.frem_type || product.lens_type ? {
-                    [Op.or]: [
-                        product.frem_type ? { frem_type: product.frem_type } : {},
-                        product.lens_type ? { lens_type: product.lens_type } : {},
-                    ]
-                } : {}) // Skip filtering if both values are null
+                product_id: { [Op.ne]: productId },
+                [Op.or]: [
+                    product.frem_type ? { frem_type: product.frem_type } : null,
+                    product.lens_type ? { lens_type: product.lens_type } : null,
+                ].filter(Boolean), // remove nulls
             },
             limit: 4,
             order: [['createdAt', 'DESC']],
         });
+
+        // Step 2: If no matching products found, get 4 random products
+        if (!suggestedProducts || suggestedProducts.length === 0) {
+            suggestedProducts = await products.findAll({
+                where: {
+                    product_id: { [Op.ne]: productId },
+                },
+                limit: 4,
+                order: Sequelize.literal('RAND()'), // MySQL only
+            });
+        }
 
 
         return res.status(200).send({

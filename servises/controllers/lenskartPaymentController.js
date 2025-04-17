@@ -82,17 +82,17 @@ const varifyLenskartPayment = async (req, res) => {
     const {
         power, product
     } = checkoutData;
-  
-    
+
+
     if (!power || !product) {
         return res.status(400).json({ message: "Invalid checkout data!" });
     }
-   
+
     const { add, axis, leftLens, rightLens, selectedLensOrProducrPrice, selectLansType, selectedType } = power;
     const { CYL: leftCyl, SPH: leftSph } = leftLens || {};
     const { CYL: rightCyl, SPH: rightSph } = rightLens || {};
-    const { mobile_number, product_id, selectedColor } = product;
-    console.log("selectedLensOrProducrPrice", selectedLensOrProducrPrice)
+    const { mobile_number, product_id, selectedColor, productQuntity } = product;
+   
     try {
         // Verify Razorpay Signature
         const sign = razorpay_order_id + "|" + razorpay_payment_id;
@@ -129,8 +129,9 @@ const varifyLenskartPayment = async (req, res) => {
                 mobile_number: mobile_number,
                 product_id: product_id,
                 delivery_status: "Processing",
-                frem_color:selectedColor.frameName,
-                lens_color:selectedColor.lensName,
+                frem_color: selectedColor.frameColor,
+                lens_color: selectedColor.lensColor,
+                product_quantity: productQuntity,
             }, { transaction });
         });
 
@@ -142,7 +143,7 @@ const varifyLenskartPayment = async (req, res) => {
     }
 };
 
-const paymentDetails = async(req, res) => {
+const paymentDetails = async (req, res) => {
     try {
         const data = await lenskartCheckout.findAll()
         if (!data) {
