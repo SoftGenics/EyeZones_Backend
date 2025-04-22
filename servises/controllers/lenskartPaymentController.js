@@ -72,7 +72,7 @@ const getLenskartPayment = async (req, res) => {
 // };
 
 const varifyLenskartPayment = async (req, res) => {
-    const { razorpay_order_id, razorpay_payment_id, razorpay_signature, checkoutData } = req.body;
+    const { razorpay_order_id, razorpay_payment_id, razorpay_signature, checkoutData, selectedAddressId } = req.body;
 
     if (!razorpay_order_id || !razorpay_payment_id || !razorpay_signature || !checkoutData) {
         return res.status(400).json({ message: "Missing required data!" });
@@ -132,6 +132,7 @@ const varifyLenskartPayment = async (req, res) => {
                 frem_color: selectedColor.frameColor,
                 lens_color: selectedColor.lensColor,
                 product_quantity: productQuntity,
+                selected_address_id : selectedAddressId,
             }, { transaction });
         });
 

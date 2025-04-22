@@ -6,7 +6,7 @@ const {userAuth} = require('../middleware/authmiddleware')
 
 route.post('/addaddress/',userAuth,addressapi.createAddress)
 route.get('/getalladdressinfo/',userAuth,addressapi.getalladdressinfo)
-route.patch('/editaddress/',userAuth,addressapi.editaddress)
+route.put('/editaddress/:id',userAuth,addressapi.editaddress)
 route.delete('/removeaddress/:id',userAuth,addressapi.removeaddress)
 route.get('/getallUserInfo/', addressapi.getallUserinfo)
 

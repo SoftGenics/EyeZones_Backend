@@ -68,6 +68,11 @@ const LenskartCheckout = database.define('LenskartCheckout', {
         type: DataTypes.STRING,
         allowNull: false,
     },
+    selected_address_id: {
+        type: DataTypes.STRING,
+        allowNull: true,
+    },
+    
     
     paymentId: { // Explicitly defining the foreign key 
         type: DataTypes.INTEGER,
