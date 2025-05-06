@@ -27,6 +27,7 @@ const productsController = require('../controllers/productsController')
 
 route.post('/product/',productsController.Addproduct)
 route.get('/product/',productsController.getproduct)
+route.get('/new/arrivel/',productsController.newArrivel)
 route.get('/product/productdetail/:productId',productsController.productdetail)
 route.delete('/api/products/delete/:product_id', productsController.productDeleteById)
 route.get('/api/products/all/filter', productsController.fillterData)

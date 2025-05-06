@@ -4,11 +4,12 @@ var bodyParser = require('body-parser')
 
 var cors = require('cors')
 
-const {testDbConnection} = require('./servises/connection/database')
+const { testDbConnection } = require('./servises/connection/database')
 const app = express();
 
 const registration = require('./servises/routes/registration');
 const carousel = require('./servises/routes/carousel');
+const slider = require('./servises/routes/slider');
 const products = require('./servises/routes/products');
 const categories = require('./servises/routes/categories');
 const subCategories = require('./servises/routes/subCategories');
@@ -33,7 +34,7 @@ testDbConnection();
 let PORT = process.env.PORT || 8000;
 
 // Parse JSON-encoded bodies
- app.use(bodyParser.json());
+app.use(bodyParser.json());
 // Parse URL-encoded bodies
 app.use(bodyParser.urlencoded({ extended: true }));
 // app.use(cors())
@@ -43,11 +44,12 @@ app.use(cors({
   credentials: true,
 }));
 
-app.use('/uploads',express.static("uploads"));
+app.use('/uploads', express.static("uploads"));
 
 // Routes
-app.use('/', registration); 
+app.use('/', registration);
 app.use('/', carousel);
+app.use('/', slider);
 app.use('/', products);
 app.use('/', categories);
 app.use('/', subCategories);
@@ -68,12 +70,12 @@ app.use('./', color)
 app.use('/api/payment', lenskartPayment);
 // Routes
 
-app.get('/hello', (req, res)=>{
-  res.send({'message': 'hello user i am here'})
+app.get('/hello', (req, res) => {
+  res.send({ 'message': 'hello user i am here' })
 })
 
 // app listen
-app.listen(PORT, ()=> {
+app.listen(PORT, () => {
   console.log(`Server started at https//localhost:${PORT}...`)
-}) ;
+});
 

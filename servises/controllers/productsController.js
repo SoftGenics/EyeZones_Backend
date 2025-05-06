@@ -7,6 +7,7 @@ const multer = require('multer');
 const path = require('path');
 
 
+
 // const productsData = async (req, res) => {
 
 //     const product_categories = req.body.product_categories;
@@ -322,7 +323,6 @@ const Addproduct = async (req, res) => {
     }
 };
 
-
 const getproduct = async (req, res) => {
 
     try {
@@ -348,6 +348,49 @@ const getproduct = async (req, res) => {
         return res.status(500).json({ message: 'Internal server error' });
     }
 }
+
+const newArrivel = async (req, res) => {
+  try {
+    // Step 1: Try to get latest products by date (e.g., createdAt or updatedAt)
+    const latestProducts = await products.findAll({
+      where: {
+        createdAt: {
+          [Op.lte]: new Date(), // Optional: to ensure it's not future-dated
+        },
+      },
+      include: [
+        { model: Specification },
+        { model: offer },
+      ],
+      order: [['createdAt', 'DESC']], // Order by latest
+      limit: 10, // Get latest 10 products
+    });
+
+    // Step 2: If no latest products found, get random products instead
+    let resultProducts = latestProducts;
+    if (latestProducts.length === 0) {
+      const randomProducts = await products.findAll({
+        include: [
+          { model: Specification },
+          { model: offer },
+        ],
+        order: [Sequelize.literal('RAND()')], // For MySQL. Use RANDOM() for Postgres
+        limit: 10,
+      });
+      resultProducts = randomProducts;
+    }
+
+    return res.status(200).send({
+      success: 'success',
+      result: resultProducts,
+    });
+
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({ message: 'Internal server error' });
+  }
+};
+
 
 // const productdetail = async (req, res) => {
 //     try {
@@ -700,7 +743,7 @@ const editProduct = async (req, res) => {
 };
 
 
-module.exports = { Addproduct, getproduct, productdetail, fillterData, productDeleteById, fillterDataget, fillterNewData, editProduct }
+module.exports = { Addproduct, getproduct, newArrivel, productdetail, fillterData, productDeleteById, fillterDataget, fillterNewData, editProduct }
 
 // module.exports = { productsData, getAllData, fillterData, getDataById, productDeleteById, editProductById }
 
