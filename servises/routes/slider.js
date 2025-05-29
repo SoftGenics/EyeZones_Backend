@@ -19,5 +19,6 @@ const sliderController = require('../controllers/sliderController')
 
 route.post('/api/slider', upload.single("slider_url"), sliderController.createSlider)
 route.get('/api/slider', sliderController.getSlider)
+route.put('/api/slider/edit/:id', upload.single('slider_url'),sliderController.editSliderById)
 
 module.exports = route
