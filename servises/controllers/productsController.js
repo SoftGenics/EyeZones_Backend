@@ -223,14 +223,21 @@ const upload = multer({ storage: storage });
 
 const Addproduct = async (req, res) => {
     try {
-        upload.fields([{ name: 'product_all_img', maxCount: 10 }, { name: 'product_thumnail_img', maxCount: 10 }, { name: 'ideal_for_img', maxCount: 10 }, { name: 'work_for_img', maxCount: 1 }])(req, res, async (err) => {
+        upload.fields([
+            { name: 'product_all_img', maxCount: 10 },
+            { name: 'product_thumnail_img', maxCount: 10 },
+            { name: 'ideal_for_img', maxCount: 10 },
+            { name: 'work_for_img', maxCount: 1 },
+            { name: 'video_url', maxCount: 1 },
+            { name: 'video_thumbnail', maxCount: 1 },
+        ])(req, res, async (err) => {
             if (err) {
                 return res.status(400).json({ message: 'File upload failed' });
             }
 
-            // new update
             // Access the uploaded files via req.files
             const allimages = req.files['product_all_img']
+
             // console.log(allimages,'allimages')
             if (!allimages) {
                 return res.status(400).json({ message: 'No files were uploaded for product_thumbnail_img' });
@@ -258,6 +265,12 @@ const Addproduct = async (req, res) => {
                 work_for_img: imageUrlWorkFor,
             }] : [];
 
+            // ✅ Handle video and thumbnail
+            const videoFile = req.files['video_url']?.[0];
+            const videoThumbnailFile = req.files['video_thumbnail']?.[0];
+
+            const videoUrl = videoFile ? `uploads/${videoFile.filename}` : null;
+            const videoThumbnailUrl = videoThumbnailFile ? `uploads/${videoThumbnailFile.filename}` : null;
 
             const colors = req.body.color ? JSON.parse(req.body.color) : []; // Parse JSON input
 
@@ -279,9 +292,9 @@ const Addproduct = async (req, res) => {
 
             // Create a new product record in the database
             const data = await products.create({
+
                 // new update
                 product_all_img: allimagesUrls || '', // Empty if no image is uploaded
-
                 product_name: req.body.product_name || '', // Empty if not provided
                 product_title: req.body.product_title || '',
                 product_description: req.body.product_description || '',
@@ -290,11 +303,13 @@ const Addproduct = async (req, res) => {
                 product_ad: req.body.product_ad || false, // Default to false
                 offer: req.body.offer || '',
                 count_in_stock: req.body.count_in_stock || 0, // Default to 0
+
                 // new update
                 frame_shape: req.body.frame_shape || '',
                 frem_type: req.body.frem_type || '',
                 gender: req.body.gender || '',
                 color: req.body.color || '',
+
                 // Set rating and discount to null if not provided
                 rating: req.body.rating ? req.body.rating : null,
                 discount: req.body.discount ? req.body.discount : null,
@@ -313,6 +328,10 @@ const Addproduct = async (req, res) => {
                 lensInformation: req.body.lensInformation || '',
                 frameMaterial: req.body.frameMaterial || '',
                 templeColor: req.body.templeColor || '',
+
+                // ✅ Add these
+                video_url: videoUrl,
+                video_thumbnail: videoThumbnailUrl
             });
 
             return res.json({ message: 'Product added successfully', data: data });
@@ -350,45 +369,45 @@ const getproduct = async (req, res) => {
 }
 
 const newArrivel = async (req, res) => {
-  try {
-    // Step 1: Try to get latest products by date (e.g., createdAt or updatedAt)
-    const latestProducts = await products.findAll({
-      where: {
-        createdAt: {
-          [Op.lte]: new Date(), // Optional: to ensure it's not future-dated
-        },
-      },
-      include: [
-        { model: Specification },
-        { model: offer },
-      ],
-      order: [['createdAt', 'DESC']], // Order by latest
-      limit: 10, // Get latest 10 products
-    });
+    try {
+        // Step 1: Try to get latest products by date (e.g., createdAt or updatedAt)
+        const latestProducts = await products.findAll({
+            where: {
+                createdAt: {
+                    [Op.lte]: new Date(), // Optional: to ensure it's not future-dated
+                },
+            },
+            include: [
+                { model: Specification },
+                { model: offer },
+            ],
+            order: [['createdAt', 'DESC']], // Order by latest
+            limit: 10, // Get latest 10 products
+        });
 
-    // Step 2: If no latest products found, get random products instead
-    let resultProducts = latestProducts;
-    if (latestProducts.length === 0) {
-      const randomProducts = await products.findAll({
-        include: [
-          { model: Specification },
-          { model: offer },
-        ],
-        order: [Sequelize.literal('RAND()')], // For MySQL. Use RANDOM() for Postgres
-        limit: 10,
-      });
-      resultProducts = randomProducts;
+        // Step 2: If no latest products found, get random products instead
+        let resultProducts = latestProducts;
+        if (latestProducts.length === 0) {
+            const randomProducts = await products.findAll({
+                include: [
+                    { model: Specification },
+                    { model: offer },
+                ],
+                order: [Sequelize.literal('RAND()')], // For MySQL. Use RANDOM() for Postgres
+                limit: 10,
+            });
+            resultProducts = randomProducts;
+        }
+
+        return res.status(200).send({
+            success: 'success',
+            result: resultProducts,
+        });
+
+    } catch (error) {
+        console.error(error);
+        return res.status(500).json({ message: 'Internal server error' });
     }
-
-    return res.status(200).send({
-      success: 'success',
-      result: resultProducts,
-    });
-
-  } catch (error) {
-    console.error(error);
-    return res.status(500).json({ message: 'Internal server error' });
-  }
 };
 
 

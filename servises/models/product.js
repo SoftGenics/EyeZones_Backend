@@ -25,8 +25,8 @@ const products = database.define('products', {
         allowNull: true,
     },
 
-    place:{
-        type:DataTypes.STRING,
+    place: {
+        type: DataTypes.STRING,
         allowNull: true,
     },
 
@@ -52,22 +52,22 @@ const products = database.define('products', {
         type: DataTypes.BOOLEAN,
         allowNull: true,
     },
-    count_in_stock:{
-        type:DataTypes.INTEGER,
-        allowNull:false,
-        defaultValue:0,
-        
+    count_in_stock: {
+        type: DataTypes.INTEGER,
+        allowNull: false,
+        defaultValue: 0,
+
     },
     offer: {
         type: DataTypes.STRING,
         allowNull: true,
     },
-    rating:{
+    rating: {
         type: DataTypes.FLOAT,
         allowNull: true,
 
     },
-    discount:{
+    discount: {
         type: DataTypes.FLOAT,
         allowNull: true,
 
@@ -80,44 +80,44 @@ const products = database.define('products', {
         type: DataTypes.JSON, // Replace STRING with the appropriate data type for your array elements
         allowNull: true,
     },
-    highlights:{
+    highlights: {
         type: DataTypes.STRING,
         allowNull: true,
 
     },
-    product_expiry_date:{
+    product_expiry_date: {
         type: DataTypes.STRING,
         allowNull: true,
     },
-    product_all_img:{
+    product_all_img: {
         type: DataTypes.JSON,
-        allowNull: true  
+        allowNull: true
     },
-    frame_shape:{
+    frame_shape: {
         type: DataTypes.STRING,
         allowNull: true,
     },
-    frem_type:{
+    frem_type: {
         type: DataTypes.STRING,
         allowNull: true,
     },
-    frameDescription:{
+    frameDescription: {
         type: DataTypes.STRING,
         allowNull: true,
     },
-    lensInformation:{
+    lensInformation: {
         type: DataTypes.STRING,
         allowNull: true,
     },
-    frameMaterial:{
+    frameMaterial: {
         type: DataTypes.STRING,
         allowNull: true,
     },
-    templeColor:{
+    templeColor: {
         type: DataTypes.STRING,
         allowNull: true,
     },
-    gender:{
+    gender: {
         type: DataTypes.STRING,
         allowNull: true,
     },
@@ -133,22 +133,31 @@ const products = database.define('products', {
         type: DataTypes.STRING, // Replace STRING with the appropriate data type for your array elements
         allowNull: true,
     },
+    video_url: {
+        type: DataTypes.STRING,
+        allowNull: true,
+    },
+    video_thumbnail: {
+        type: DataTypes.STRING,
+        allowNull: true,
+    },
+
     createdAt: {
         type: DataTypes.DATE,
         defaultValue: Sequelize.literal('CURRENT_TIMESTAMP'), // Set the default value to the current timestamp
-      },
-      updatedAt: {
+    },
+    updatedAt: {
         type: DataTypes.DATE,
         defaultValue: Sequelize.literal('CURRENT_TIMESTAMP'),
         onUpdate: Sequelize.literal('CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP'),
-      },
-      
-},
-{
-    timestamps: false,
-    freezeTableName: true,
+    },
 
-}
+},
+    {
+        timestamps: false,
+        freezeTableName: true,
+
+    }
 )
 
 module.exports = products;

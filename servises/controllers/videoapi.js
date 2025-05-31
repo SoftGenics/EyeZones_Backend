@@ -19,6 +19,7 @@ const upload = multer({ storage: storage });
 const Addvideo = async (req, res) => {
     console.log('INFO -> Addvideo INFO API CALLED')
     // console.log(object)
+
     try {
         // Using upload.single() to handle a single file upload with the field name 'video'
         upload.single('video_url')(req, res, async (err) => {
@@ -29,9 +30,10 @@ const Addvideo = async (req, res) => {
             // Check if a video file was uploaded
             const videofile = req.file;
             console.log(videofile, 'videofilevideofilevideofile')
+            
             // Assuming you want to save video metadata to the database
             const { title, description, video_type, like, shared, Videothumnail_id } = req.body;
-           const videos = await Video.create({
+            const videos = await Video.create({
                 title,
                 description,
                 video_type,
